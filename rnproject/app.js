@@ -1,3 +1,4 @@
+ 
 document.addEventListener("DOMContentLoaded", function () {
     const faqItems = document.querySelectorAll(".faq-item");
 
@@ -27,3 +28,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+ 

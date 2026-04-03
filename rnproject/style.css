@@ -897,6 +897,7 @@ section {
     }
 }
 
+
 /* ========================================
    Responsive Design
    ======================================== */
@@ -977,3 +978,4 @@ section {
 .faq-question i {
     transition: transform 0.3s ease;
 }
+
