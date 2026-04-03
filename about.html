@@ -3,27 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>about</title>
     <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
+    <title>About Us - R.N. Agritech Services</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
 </head>
 <body>
     <nav class="navbar" id="navbar">
         <div class="container">
-            <div class="nav-brand">
-                <i class="fas fa-leaf"></i><!--fas - font awesome Solid style name and leaf icon -->
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-leaf"></i>
                 <span>R.N. Agritech Services</span>
-            </div>
+            </a>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="home.html" class="nav-link">Home</a></li>
-                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="about.html" class="nav-link active">About</a></li>
                 <li><a href="service.html" class="nav-link">Services</a></li>
-                <li><a href="plants.html" class="nav-link">Plants & Materials</a></li>
+                <li><a href="plants.html" class="nav-link">Store</a></li>
                 <li><a href="contact.html" class="nav-link">Contacts</a></li>
                 <li><a href="blog.html" class="nav-link">Blog</a></li>
             </ul>
+            <div class="nav-icons">
+                <a href="login.html" class="nav-icon" title="Login / Register">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <div class="nav-icon" id="cartToggle" title="View Cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
         </div>
     </nav>
+
+    <!-- Cart Sidebar (Necessary for app.js) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <i class="fas fa-times close-cart" id="closeCart"></i>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₹0</span>
+            </div>
+            <button class="btn-checkout">Checkout Now</button>
+        </div>
+    </div>
+
     <section class="about" id="about">
         <div class="container">
             <div class="section-header">
@@ -78,9 +106,8 @@
             </div>
         </div>
     </section>
-</body>
-</html>
-<footer class="footer">
+
+    <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
@@ -91,11 +118,11 @@
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#plants">Plants & Materials</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="service.html">Services</a></li>
+                        <li><a href="plants.html">Store</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -126,3 +153,7 @@
             </div>
         </div>
     </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

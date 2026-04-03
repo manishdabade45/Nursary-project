@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
+    <title>Login / Signup - R.N. Agritech Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>R.N. Agritech Services</span>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="about.html" class="nav-link">About</a></li>
+                <li><a href="service.html" class="nav-link">Services</a></li>
+                <li><a href="plants.html" class="nav-link">Store</a></li>
+                <li><a href="contact.html" class="nav-link">Contacts</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+            </ul>
+            <div class="nav-icons">
+                <a href="login.html" class="nav-icon" title="Login / Register">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <div class="nav-icon" id="cartToggle" title="View Cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="login-section">
+        <div class="login-card" id="authCard">
+            <!-- Login Form -->
+            <div id="loginFormContainer">
+                <h2>Welcome Back</h2>
+                <p>Login to manage your account and track orders</p>
+                <form class="contact-form" id="loginForm">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group" style="text-align: left;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div style="text-align: right; margin-bottom: 1rem;">
+                        <a href="#" style="color: var(--primary-green); font-size: 0.9rem; font-weight: 500;">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                    
+                    <div style="margin-top: 1.5rem; color: var(--dark-gray); font-size: 0.9rem;">
+                        Don't have an account? <span class="auth-toggle" id="toSignup">Register Now</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Signup Form (Hidden by default) -->
+            <div id="signupFormContainer" style="display: none;">
+                <h2>Create Account</h2>
+                <p>Join R.N. Agritech Services today</p>
+                <form class="contact-form" id="signupForm">
+                    <div class="form-group" style="text-align: left;">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" name="signupName" placeholder="Enter your name" required>
+                    </div>
+
+                    <div class="form-group" style="text-align: left;">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" name="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group" style="text-align: left;">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                    
+                    <div style="margin-top: 1.5rem; color: var(--dark-gray); font-size: 0.9rem;">
+                        Already have an account? <span class="auth-toggle" id="toLogin">Sign In</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+    <script>
+        // Form Toggle logic
+        const loginContainer = document.getElementById('loginFormContainer');
+        const signupContainer = document.getElementById('signupFormContainer');
+        const toSignup = document.getElementById('toSignup');
+        const toLogin = document.getElementById('toLogin');
+
+        toSignup.addEventListener('click', () => {
+            loginContainer.style.display = 'none';
+            signupContainer.style.display = 'block';
+        });
+
+        toLogin.addEventListener('click', () => {
+            signupContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+        });
+
+        // Signup Form Logic
+        const signupForm = document.getElementById('signupForm');
+        if (signupForm) {
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                
+                const user = { email: email, name: name };
+                localStorage.setItem('rn_user', JSON.stringify(user));
+                alert("Account created and logged in!");
+                window.location.href = 'plants.html';
+            });
+        }
+    </script>
+</body>
+</html>
