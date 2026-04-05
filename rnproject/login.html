@@ -114,21 +114,6 @@
             signupContainer.style.display = 'none';
             loginContainer.style.display = 'block';
         });
-
-        // Signup Form Logic
-        const signupForm = document.getElementById('signupForm');
-        if (signupForm) {
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('signupName').value;
-                const email = document.getElementById('signupEmail').value;
-                
-                const user = { email: email, name: name };
-                localStorage.setItem('rn_user', JSON.stringify(user));
-                alert("Account created and logged in!");
-                window.location.href = 'plants.html';
-            });
-        }
     </script>
 </body>
 </html>
