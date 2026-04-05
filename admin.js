@@ -1,5 +1,12 @@
-
 document.addEventListener("DOMContentLoaded", function () {
+    // --- Access Control ---
+    const currentUser = JSON.parse(localStorage.getItem('rn_user'));
+    if (!currentUser || currentUser.email !== 'manishndabade2006@gmail.com') {
+        alert("Access Denied: Administrative privileges required.");
+        window.location.href = "index.html";
+        return;
+    }
+
     const orders = JSON.parse(localStorage.getItem('rn_orders')) || [];
     
     // --- Stats Elements ---

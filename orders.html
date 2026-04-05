@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
+    <title>My Orders - R.N. Agritech Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+</head>
+<body class="orders-page">
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>R.N. Agritech Services</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="plants.html" class="nav-link">Store</a></li>
+                <li><a href="orders.html" class="nav-link active">My Orders</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="orders-container">
+            <div class="orders-main">
+                <div class="cart-header-title">My Orders</div>
+                <div id="orderHistoryList" style="padding: 16px;">
+                    <!-- Orders will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof renderOrderHistory === 'function') {
+                renderOrderHistory();
+            }
+        });
+    </script>
+</body>
+</html>
