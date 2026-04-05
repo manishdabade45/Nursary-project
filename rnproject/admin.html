@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
+    <title>Admin Dashboard - R.N. Agritech Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>R.N. Agritech Services Admin</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="plants.html" class="nav-link">View Store</a></li>
+                <li><a href="#" class="nav-link active">Admin Panel</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="admin-container">
+        <div class="container">
+            <div class="admin-header">
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.location.reload();">Refresh Data</button>
+                    <button class="btn btn-secondary" onclick="exportData();">Export CSV</button>
+                </div>
+            </div>
+
+            <div class="admin-stats">
+                <div class="stat-box">
+                    <i class="fas fa-shopping-bag"></i>
+                    <div class="stat-info">
+                        <h4>Total Orders</h4>
+                        <span id="totalOrders">0</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-rupee-sign"></i>
+                    <div class="stat-info">
+                        <h4>Total Sales</h4>
+                        <span id="totalSales">₹0</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-info">
+                        <h4>Total Customers</h4>
+                        <span id="totalCustomers">0</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-box"></i>
+                    <div class="stat-info">
+                        <h4>Total Plants Sold</h4>
+                        <span id="totalPlantsSold">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-table-container">
+                <h3>Recent Orders</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <!-- Table rows will be added by admin.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
