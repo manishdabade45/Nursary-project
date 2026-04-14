@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
     <title>Shop Plants - E-Commerce</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 </head>
+
 <body>
     <nav class="navbar" id="navbar">
         <div class="container">
@@ -35,16 +39,33 @@
             </div>
         </div>
     </nav>
-    </nav>
 
-   <section class="plants" id="plants">
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <i class="fas fa-times close-cart" id="closeCart"></i>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items appear here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">?0</span>
+            </div>
+            <button class="btn-checkout">Checkout Now</button>
+        </div>
+    </div>
+
+    <section class="plants" id="plants">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Plants & Materials Store</h2>
                 <div class="title-underline"></div>
                 <p class="section-subtitle">Premium Quality Plants and Gardening Materials right to your doorstep</p>
             </div>
-            
+
             <!-- Featured Plants -->
             <div class="subsection">
                 <h3 class="subsection-title">Featured Plants</h3>
@@ -55,12 +76,12 @@
                         </div>
                         <h4>Spider Lily</h4>
                         <p class="plant-desc">Beautiful flowering plant perfect for borders and ground cover</p>
-                        <div class="price-tag">₹120</div>
+                        <div class="price-tag">Rs. 120</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="2" data-name="Plumeria Alba" data-price="450">
                         <div class="plant-image">
                             <img src="Plumeria Alba.webp" alt="Plumeria Alba">
@@ -68,12 +89,12 @@
                         <h4>Plumeria Alba</h4>
                         <p class="plant-size">Bag Size: 21x21</p>
                         <p class="plant-desc">Fragrant flowering tree with stunning white blooms</p>
-                        <div class="price-tag">₹450</div>
+                        <div class="price-tag">Rs. 450</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="3" data-name="Cristina Ficus" data-price="250">
                         <div class="plant-image">
                             <img src="christina ficus.webp" alt="Cristina Ficus">
@@ -81,12 +102,12 @@
                         <h4>Cristina Ficus</h4>
                         <p class="plant-size">Bag Size: 13x13</p>
                         <p class="plant-desc">Ornamental ficus variety ideal for landscaping</p>
-                        <div class="price-tag">₹250</div>
+                        <div class="price-tag">Rs. 250</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="4" data-name="Pendanus Variegated" data-price="180">
                         <div class="plant-image">
                             <img src="Pendanus Variegated.jpg" alt="Pendanus">
@@ -94,12 +115,12 @@
                         <h4>Pendanus Variegated</h4>
                         <p class="plant-size">Bag Size: 7x8</p>
                         <p class="plant-desc">Attractive variegated foliage plant</p>
-                        <div class="price-tag">₹180</div>
+                        <div class="price-tag">Rs. 180</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="5" data-name="Areca Palm" data-price="350">
                         <div class="plant-image">
                             <img src="areca palm.jpg" alt="Areca Palm">
@@ -107,12 +128,12 @@
                         <h4>Areca Palm</h4>
                         <p class="plant-size">Bag Size: 15x16</p>
                         <p class="plant-desc">Popular palm for tropical landscaping</p>
-                        <div class="price-tag">₹350</div>
+                        <div class="price-tag">Rs. 350</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="6" data-name="Supari Palm" data-price="600">
                         <div class="plant-image">
                             <img src="supari tree.jpg" alt="Supari Tree">
@@ -120,12 +141,12 @@
                         <h4>Supari Palm</h4>
                         <p class="plant-size">Bag Size: 21x21</p>
                         <p class="plant-desc">Tall, elegant palm for statement plantings</p>
-                        <div class="price-tag">₹600</div>
+                        <div class="price-tag">Rs. 600</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="7" data-name="Bird of Paradise" data-price="280">
                         <div class="plant-image">
                             <img src="Bird of paradise.jpg" alt="Bird of Paradise">
@@ -133,12 +154,12 @@
                         <h4>Bird of Paradise</h4>
                         <p class="plant-size">Bag Size: 9x10</p>
                         <p class="plant-desc">Striking tropical plant with exotic flowers</p>
-                        <div class="price-tag">₹280</div>
+                        <div class="price-tag">Rs. 280</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="plant-card" data-id="8" data-name="Wadelia Creeper" data-price="80">
                         <div class="plant-image">
                             <img src="wedialia plant.webp" alt="Wadelia Creeper">
@@ -146,14 +167,14 @@
                         <h4>Wadelia Creeper</h4>
                         <p class="plant-size">Bag Size: 5x6</p>
                         <p class="plant-desc">Yellow flowering ground cover creeper</p>
-                        <div class="price-tag">₹80</div>
+                        <div class="price-tag">Rs. 80</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Materials Section -->
             <div class="subsection">
                 <h3 class="subsection-title">Quality Materials</h3>
@@ -162,27 +183,27 @@
                         <i class="fas fa-mountain"></i>
                         <h4>Garden Soil (Poyata)</h4>
                         <p>Premium quality garden soil for optimal plant growth (5kg)</p>
-                        <div class="price-tag">₹100</div>
+                        <div class="price-tag">Rs. 100</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="material-card plant-card" data-id="10" data-name="Vermicompost" data-price="150">
                         <i class="fas fa-recycle"></i>
                         <h4>Vermicompost</h4>
                         <p>Organic vermicompost for natural soil enrichment (2kg)</p>
-                        <div class="price-tag">₹150</div>
+                        <div class="price-tag">Rs. 150</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="material-card plant-card" data-id="11" data-name="Neem Cake" data-price="120">
                         <i class="fas fa-seedling"></i>
                         <h4>Neem Cake</h4>
                         <p>Natural organic fertilizer with pest control properties (1kg)</p>
-                        <div class="price-tag">₹120</div>
+                        <div class="price-tag">Rs. 120</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
@@ -192,27 +213,27 @@
                         <i class="fas fa-flask"></i>
                         <h4>Nutrient Granules</h4>
                         <p>Balanced nutrient granules for healthy plant growth</p>
-                        <div class="price-tag">₹200</div>
+                        <div class="price-tag">Rs. 200</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="material-card plant-card" data-id="13" data-name="Organic Fertilizer" data-price="180">
                         <i class="fas fa-leaf"></i>
                         <h4>Bio Fertilizers</h4>
                         <p>Eco-friendly biological fertilizers</p>
-                        <div class="price-tag">₹180</div>
+                        <div class="price-tag">Rs. 180</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
                     </div>
-                    
+
                     <div class="material-card plant-card" data-id="14" data-name="Pesticides" data-price="250">
                         <i class="fas fa-spray-can"></i>
                         <h4>Pesticides</h4>
                         <p>Safe and effective pest control solutions</p>
-                        <div class="price-tag">₹250</div>
+                        <div class="price-tag">Rs. 250</div>
                         <div class="buy-group">
                             <button class="btn-cart add-to-cart"><i class="fas fa-cart-plus"></i> Add to Cart</button>
                         </div>
@@ -228,9 +249,10 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3><i class="fas fa-leaf"></i> R.N. Agritech Services</h3>
-                    <p>Transforming outdoor spaces into beautiful, sustainable green environments with professional landscape gardening and agricultural consultancy services.</p>
+                    <p>Transforming outdoor spaces into beautiful, sustainable green environments with professional
+                        landscape gardening and agricultural consultancy services.</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
@@ -241,7 +263,7 @@
                         <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Our Services</h4>
                     <ul>
@@ -252,7 +274,7 @@
                         <li>Horticultural Materials</li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Contact Us</h4>
                     <ul>
@@ -263,14 +285,16 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 R.N. Agritech Services. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+    <script src="api.js"></script>
     <script src="app.js"></script>
-   
+
 </body>
-</html> 
+
+</html>

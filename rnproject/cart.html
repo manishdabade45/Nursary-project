@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
     <title>Shopping Cart - R.N. Agritech Services</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 </head>
+
 <body class="cart-page">
     <nav class="navbar">
         <div class="container">
@@ -31,7 +35,8 @@
                 <div id="cartPageItems">
                     <!-- Cart items will be rendered here -->
                 </div>
-                <div class="cart-footer-actions" style="padding: 16px 24px; text-align: right; border-top: 1px solid #f0f0f0;">
+                <div class="cart-footer-actions"
+                    style="padding: 16px 24px; text-align: right; border-top: 1px solid #f0f0f0;">
                     <button class="btn-place-order" id="btnGoToCheckout">Place Order</button>
                 </div>
             </div>
@@ -42,7 +47,7 @@
                 <div class="price-content">
                     <div class="price-item">
                         <span>Price (<span id="summaryItemCount">0</span> items)</span>
-                        <span id="summarySubtotal">₹0</span>
+                        <span id="summarySubtotal">?0</span>
                     </div>
                     <div class="price-item">
                         <span>Delivery Charges</span>
@@ -50,22 +55,24 @@
                     </div>
                     <div class="price-total">
                         <span>Total Amount</span>
-                        <span id="summaryTotal">₹0</span>
+                        <span id="summaryTotal">?0</span>
                     </div>
-                    <div class="savings-text">You will save ₹0 on this order</div>
+                    <div class="savings-text">You will save ?0 on this order</div>
                 </div>
             </div>
         </div>
 
         <!-- Empty Cart State -->
         <div id="emptyCartState" style="display: none; text-align: center; padding: 50px; background: #fff;">
-            <img src="https://rukminim1.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png?q=90" alt="Empty Cart" style="width: 300px; margin: 0 auto 20px;">
+            <img src="https://rukminim1.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png?q=90"
+                alt="Empty Cart" style="width: 300px; margin: 0 auto 20px;">
             <h3>Your cart is empty!</h3>
             <p>Add items to it now.</p>
             <a href="plants.html" class="btn btn-primary" style="margin-top: 20px; background: #2874f0;">Shop Now</a>
         </div>
     </div>
 
+    <script src="api.js"></script>
     <script src="app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -75,4 +82,5 @@
         });
     </script>
 </body>
+
 </html>

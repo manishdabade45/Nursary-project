@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const orders = JSON.parse(localStorage.getItem('rn_orders')) || [];
-    
+
     // --- Stats Elements ---
     const totalOrdersEl = document.getElementById('totalOrders');
     const totalSalesEl = document.getElementById('totalSales');
@@ -32,9 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderOrderTable() {
         if (!orderTableBody) return;
-        
+
         orderTableBody.innerHTML = '';
-        
+
         if (orders.length === 0) {
             orderTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders found.</td></tr>';
             return;
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // --- Exposed Functions ---
-    window.updateOrderStatus = function(orderId, newStatus) {
+    window.updateOrderStatus = function (orderId, newStatus) {
         const index = orders.findIndex(o => o.orderId === orderId);
         if (index !== -1) {
             orders[index].status = newStatus;
@@ -72,17 +72,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    window.exportData = function() {
+    window.exportData = function () {
         if (orders.length === 0) {
             alert("No data to export!");
             return;
         }
-        
+
         let csv = 'OrderID,Customer,Date,Total,Status\n';
         orders.forEach(order => {
             csv += `${order.orderId},${order.user},${order.date},${order.total},${order.status}\n`;
         });
-        
+
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');

@@ -1,0 +1,20 @@
+{
+  "name": "rn-agritech-backend",
+  "version": "1.0.0",
+  "description": "Backend API for R.N. Agritech Services - Supabase powered",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

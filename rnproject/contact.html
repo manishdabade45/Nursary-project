@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
     <title>Contact Us - R.N. Agritech Services</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 </head>
+
 <body>
     <nav class="navbar" id="navbar">
         <div class="container">
@@ -59,7 +63,7 @@
                 <div class="title-underline"></div>
                 <p class="section-subtitle">We'd Love to Hear from You</p>
             </div>
-            
+
             <div class="contact-content">
                 <div class="contact-info">
                     <div class="contact-card">
@@ -69,7 +73,7 @@
                         <h3>Address</h3>
                         <p>A-2/12, Maniratna Angan<br>Manjri Road, Hadapsar<br>Pune - 411028<br>Maharashtra, India</p>
                     </div>
-                    
+
                     <div class="contact-card">
                         <div class="contact-icon">
                             <i class="fas fa-phone"></i>
@@ -78,7 +82,7 @@
                         <p><a href="tel:+919422009218">+91 9422009218</a></p>
                         <p><a href="tel:+918087835888">+91 8087835888</a></p>
                     </div>
-                    
+
                     <div class="contact-card">
                         <div class="contact-icon">
                             <i class="fas fa-envelope"></i>
@@ -86,7 +90,7 @@
                         <h3>Email</h3>
                         <p><a href="mailto:shinden53@yahoo.in">shinden53@yahoo.in</a></p>
                     </div>
-                    
+
                     <div class="contact-card">
                         <div class="contact-icon">
                             <i class="fas fa-file-alt"></i>
@@ -96,7 +100,7 @@
                         <p><strong>PAN:</strong> AZUPS1292B</p>
                     </div>
                 </div>
-                
+
                 <div class="contact-form-container">
                     <h3>Send us a Message</h3>
                     <form class="contact-form" id="contactForm">
@@ -104,17 +108,17 @@
                             <label for="name">Name *</label>
                             <input type="text" id="name" name="name" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="email">Email *</label>
                             <input type="email" id="email" name="email" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="phone">Phone</label>
                             <input type="tel" id="phone" name="phone">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="serviceSelection">Service Interested In</label>
                             <select id="serviceSelection" name="service">
@@ -128,12 +132,13 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="message">Message *</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
+                            <textarea id="message" name="message" rows="5" maxlength="500" required></textarea>
+                            <div id="charCountDisplay" class="char-counter" style="text-align: right; font-size: 0.85rem; color: #666; margin-top: 5px;">0 / 500 characters</div>
                         </div>
-                        
+
                         <button type="submit" class="btn btn-primary">Send Message</button>
                     </form>
                     <div id="formMessage" class="form-message"></div>
@@ -150,7 +155,7 @@
                 <div class="title-underline"></div>
                 <p class="section-subtitle">Find answers to common questions about our services</p>
             </div>
-            
+
             <div class="faq-container">
                 <details class="faq-item">
                     <summary class="faq-question">
@@ -158,27 +163,30 @@
                         <i class="fas fa-chevron-down"></i>
                     </summary>
                     <div class="faq-answer">
-                        <p>We primarily serve Pune and the surrounding areas in Maharashtra. For large projects, we can also travel to nearby districts.</p>
+                        <p>We primarily serve Pune and the surrounding areas in Maharashtra. For large projects, we can
+                            also travel to nearby districts.</p>
                     </div>
                 </details>
-                
+
                 <details class="faq-item">
                     <summary class="faq-question">
                         <h3>Do you provide maintenance services after landscape development?</h3>
                         <i class="fas fa-chevron-down"></i>
                     </summary>
                     <div class="faq-answer">
-                        <p>Yes, we offer ongoing maintenance packages to ensure your garden or landscape remains healthy and beautiful year-round.</p>
+                        <p>Yes, we offer ongoing maintenance packages to ensure your garden or landscape remains healthy
+                            and beautiful year-round.</p>
                     </div>
                 </details>
-                
+
                 <details class="faq-item">
                     <summary class="faq-question">
                         <h3>Are your pest control methods safe for pets and children?</h3>
                         <i class="fas fa-chevron-down"></i>
                     </summary>
                     <div class="faq-answer">
-                        <p>We prioritize the use of safe, organic pest control solutions whenever possible. We always inform you of any precautions needed after a treatment.</p>
+                        <p>We prioritize the use of safe, organic pest control solutions whenever possible. We always
+                            inform you of any precautions needed after a treatment.</p>
                     </div>
                 </details>
 
@@ -188,7 +196,8 @@
                         <i class="fas fa-chevron-down"></i>
                     </summary>
                     <div class="faq-answer">
-                        <p>Yes, we have a wide network of partner nurseries and can source various rare and exotic plants based on your specific requirements.</p>
+                        <p>Yes, we have a wide network of partner nurseries and can source various rare and exotic
+                            plants based on your specific requirements.</p>
                     </div>
                 </details>
             </div>
@@ -200,9 +209,10 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3><i class="fas fa-leaf"></i> R.N. Agritech Services</h3>
-                    <p>Transforming outdoor spaces into beautiful, sustainable green environments with professional landscape gardening and agricultural consultancy services.</p>
+                    <p>Transforming outdoor spaces into beautiful, sustainable green environments with professional
+                        landscape gardening and agricultural consultancy services.</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
@@ -213,7 +223,7 @@
                         <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Our Services</h4>
                     <ul>
@@ -224,7 +234,7 @@
                         <li>Horticultural Materials</li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Contact Us</h4>
                     <ul>
@@ -235,13 +245,15 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 R.N. Agritech Services. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+    <script src="api.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
