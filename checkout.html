@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./leaf-solid-full.svg" type="image/x-icon">
+    <title>Checkout - R.N. Agritech Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">     
+</head>
+<body class="checkout-page">
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>R.N. Agritech Services</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="checkout-container">
+            <!-- Main Checkout Form -->
+            <div class="checkout-main">
+                
+                <!-- Step 1: Login Check -->
+                <div class="step-item active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">LOGIN / SIGNUP</div>
+                </div>
+                <div class="step-content">
+                    <p id="checkoutUserEmail">Logged in as: <span></span></p>
+                    <button class="btn btn-primary" id="btnNext1" style="background: #fb641b; border-radius: 2px; margin-top: 20px;">CONTINUE TO SHIPPING</button>
+                </div>
+
+                <!-- Step 2: Shipping Address -->
+                <div class="step-item" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">DELIVERY ADDRESS</div>
+                </div>
+                <div class="step-content">
+                    <form id="shippingForm" class="contact-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="shipName" placeholder="Enter name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="shipPhone" placeholder="10-digit mobile number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea id="shipAddress" placeholder="Address (Area and Street)" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>City/Town</label>
+                            <input type="text" id="shipCity" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" id="shipPincode" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="background: #fb641b; border-radius: 2px;">DELIVER HERE</button>
+                    </form>
+                </div>
+
+                <!-- Step 3: Order Summary -->
+                <div class="step-item" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">ORDER SUMMARY</div>
+                </div>
+                <div class="step-content">
+                   <div id="checkoutOrderItems"></div>
+                   <button class="btn btn-primary" id="btnNext3" style="background: #fb641b; border-radius: 2px; margin-top: 20px;">CONTINUE TO PAYMENT</button>
+                </div>
+
+                <!-- Step 4: Payment -->
+                <div class="step-item" id="step4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">PAYMENT OPTIONS</div>
+                </div>
+                <div class="step-content">
+                   <div class="payment-options">
+                       <div class="payment-option" style="padding: 15px; border: 1px solid #e0e0e0; margin-bottom: 10px;">
+                           <input type="radio" name="payment" id="cod" checked>
+                           <label for="cod" style="font-weight: 600; margin-left: 10px;">Cash on Delivery</label>
+                       </div>
+                   </div>
+                   <button class="btn btn-primary" id="btnPlaceOrderFinal" style="background: #fb641b; border-radius: 2px; margin-top: 20px;">CONFIRM ORDER</button>
+                </div>
+
+            </div>
+
+            <!-- Price Details Sidebar -->
+            <div class="price-details-sidebar">
+                <div class="price-header">Price Details</div>
+                <div class="price-content">
+                    <div class="price-item">
+                        <span>Price (<span id="checkItemCount">0</span> items)</span>
+                        <span id="checkSubtotal">₹0</span>
+                    </div>
+                    <div class="price-item">
+                        <span>Delivery Charges</span>
+                        <span id="checkDelivery" style="color: #388e3c;">FREE</span>
+                    </div>
+                    <div class="price-total">
+                        <span>Total Amount</span>
+                        <span id="checkTotal">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             if (typeof initCheckout === 'function') {
+                initCheckout();
+            }
+        });
+    </script>
+</body>
+</html>
