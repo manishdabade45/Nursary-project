@@ -2065,3 +2065,11 @@ body.dark-mode textarea:focus {
 body.dark-mode .theme-toggle-btn {
     color: var(--accent-gold);
 }
+
+body.dark-mode .faq {
+    background-color: var(--white);
+}
+
+body.dark-mode .faq-answer {
+    color: var(--medium-gray);
+}

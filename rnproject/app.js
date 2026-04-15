@@ -1,26 +1,28 @@
 
 document.addEventListener("DOMContentLoaded", function () {
     // --- State Management ---
-    let cart = JSON.parse(localStorage.getItem('rn_cart')) || [];
-    let currentUser = JSON.parse(localStorage.getItem('rn_user')) || null;
-    let orders = JSON.parse(localStorage.getItem('rn_orders')) || [];
+    // currentUser is now loaded from localStorage (set by API.login/signup)
+    let currentUser = API.getCurrentUser();
 
     // --- Theme Toggle Setup ---
     const savedTheme = localStorage.getItem('rn_theme');
     if (savedTheme === 'dark') document.body.classList.add('dark-mode');
 
-    // Inject Theme Toggle Icon
+    // Inject Theme Toggle Icon if it doesn't exist natively
     const navIcons = document.querySelector('.nav-icons');
-    if (navIcons) {
-        const themeToggleBtn = document.createElement('div');
+    let themeToggleBtn = document.getElementById('themeToggle');
+    
+    if (!themeToggleBtn && navIcons) {
+        themeToggleBtn = document.createElement('div');
         themeToggleBtn.className = 'nav-icon theme-toggle-btn';
+        themeToggleBtn.id = 'themeToggle';
         themeToggleBtn.title = 'Toggle Dark/Light Mode';
         themeToggleBtn.style.cursor = 'pointer';
-        themeToggleBtn.innerHTML = `<i class="fas ${savedTheme === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
-        
-        // Insert before the first icon
         navIcons.insertBefore(themeToggleBtn, navIcons.firstChild);
+    }
 
+    if (themeToggleBtn) {
+        themeToggleBtn.innerHTML = `<i class="fas ${savedTheme === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>`;
         themeToggleBtn.addEventListener('click', () => {
             const isDark = document.body.classList.toggle('dark-mode');
             localStorage.setItem('rn_theme', isDark ? 'dark' : 'light');
@@ -76,99 +78,154 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // --- CART FUNCTIONS ---
+    // --- CART FUNCTIONS (Now uses API) ---
 
-    function updateCartCount() {
-        if (cartCount) {
-            const count = cart.reduce((total, item) => total + item.quantity, 0);
+    async function updateCartCount() {
+        if (!cartCount) return;
+        try {
+            const result = await API.getCart();
+            if (result.success) {
+                cartCount.textContent = result.data.totalItems || 0;
+            }
+        } catch (err) {
+            // Fallback: read from localStorage guest cart
+            const guestCart = JSON.parse(localStorage.getItem('rn_cart') || '[]');
+            const count = guestCart.reduce((total, item) => total + item.quantity, 0);
             cartCount.textContent = count;
         }
     }
 
-    function saveCart() {
-        localStorage.setItem('rn_cart', JSON.stringify(cart));
-        updateCartCount();
-    }
-
-    // Function to update quantity
-    window.updateQuantity = function (id, delta) {
-        const item = cart.find(i => i.id === id);
-        if (item) {
-            item.quantity += delta;
-            if (item.quantity <= 0) {
-                cart = cart.filter(i => i.id !== id);
+    // Function to update quantity (exposed globally for onclick handlers)
+    window.updateQuantity = async function (id, delta) {
+        try {
+            if (API.isLoggedIn()) {
+                // For logged-in users, we need to get current cart to find the item
+                const result = await API.getCart();
+                if (result.success) {
+                    const item = result.data.items.find(i => i.id === id || i.product_id === id);
+                    if (item) {
+                        const newQty = item.quantity + delta;
+                        if (newQty <= 0) {
+                            await API.removeCartItem(item.id);
+                        } else {
+                            await API.updateCartItem(item.id, newQty);
+                        }
+                    }
+                }
+            } else {
+                // Guest mode
+                const cart = JSON.parse(localStorage.getItem('rn_cart') || '[]');
+                const item = cart.find(i => i.id === id);
+                if (item) {
+                    item.quantity += delta;
+                    if (item.quantity <= 0) {
+                        const filtered = cart.filter(i => i.id !== id);
+                        localStorage.setItem('rn_cart', JSON.stringify(filtered));
+                    } else {
+                        localStorage.setItem('rn_cart', JSON.stringify(cart));
+                    }
+                }
             }
-            saveCart();
+
             // Re-render based on current page
-            if (document.getElementById('cartPageItems')) renderCartPage();
-            if (document.getElementById('checkoutOrderItems')) renderCheckoutSummary();
+            if (document.getElementById('cartPageItems')) await renderCartPage();
+            if (document.getElementById('checkoutOrderItems')) await renderCheckoutSummary();
+            await updateCartCount();
+        } catch (err) {
+            console.error('Update quantity error:', err.message);
         }
     };
 
-    window.removeItem = function (id) {
-        cart = cart.filter(i => i.id !== id);
-        saveCart();
-        if (document.getElementById('cartPageItems')) renderCartPage();
+    window.removeItem = async function (id) {
+        try {
+            if (API.isLoggedIn()) {
+                const result = await API.getCart();
+                if (result.success) {
+                    const item = result.data.items.find(i => i.id === id || i.product_id === id);
+                    if (item) {
+                        await API.removeCartItem(item.id);
+                    }
+                }
+            } else {
+                const cart = JSON.parse(localStorage.getItem('rn_cart') || '[]');
+                localStorage.setItem('rn_cart', JSON.stringify(cart.filter(i => i.id !== id)));
+            }
+            if (document.getElementById('cartPageItems')) await renderCartPage();
+            await updateCartCount();
+        } catch (err) {
+            console.error('Remove item error:', err.message);
+        }
     };
 
     // --- DEDICATED CART PAGE RENDERING ---
-    window.renderCartPage = function () {
+    window.renderCartPage = async function () {
         const container = document.getElementById('cartPageItems');
         const emptyState = document.getElementById('emptyCartState');
         const cartContent = document.getElementById('cartPageContainer');
 
         if (!container) return;
 
-        if (cart.length === 0) {
+        try {
+            const result = await API.getCart();
+            const items = result.success ? result.data.items : [];
+
+            if (items.length === 0) {
+                cartContent.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            cartContent.style.display = 'flex';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = '';
+            let total = 0;
+
+            items.forEach(item => {
+                const itemId = item.id || item.product_id;
+                const price = parseFloat(item.price);
+                total += price * item.quantity;
+                const itemHtml = `
+                    <div class="cart-item-row">
+                        <div class="cart-item-image-box">
+                            ${item.image ? `<img src="${item.image}">` : `<i class="fas fa-leaf"></i>`}
+                            <div class="qty-controls">
+                                <button class="qty-btn" onclick="updateQuantity('${itemId}', -1)">-</button>
+                                <input type="text" class="qty-input" value="${item.quantity}" readonly>
+                                <button class="qty-btn" onclick="updateQuantity('${itemId}', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price-row">
+                                <span class="current-price">₹${price}</span>
+                                <span class="original-price">₹${Math.round(price * 1.2)}</span>
+                            </div>
+                            <div class="remove-item-btn" onclick="removeItem('${itemId}')">Remove</div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHtml);
+            });
+
+            // Update Summary
+            document.getElementById('cartItemCount').textContent = items.length;
+            document.getElementById('summaryItemCount').textContent = items.length;
+            document.getElementById('summarySubtotal').textContent = `₹${total}`;
+            document.getElementById('summaryTotal').textContent = `₹${total}`;
+            const savings = Math.round(total * 0.2);
+            document.querySelector('.savings-text').textContent = `You will save ₹${savings} on this order`;
+        } catch (err) {
+            console.error('Render cart error:', err.message);
             cartContent.style.display = 'none';
             emptyState.style.display = 'block';
-            return;
         }
-
-        cartContent.style.display = 'flex';
-        emptyState.style.display = 'none';
-
-        container.innerHTML = '';
-        let total = 0;
-
-        cart.forEach(item => {
-            total += item.price * item.quantity;
-            const itemHtml = `
-                <div class="cart-item-row">
-                    <div class="cart-item-image-box">
-                        ${item.image ? `<img src="${item.image}">` : `<i class="fas fa-leaf"></i>`}
-                        <div class="qty-controls">
-                            <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
-                            <input type="text" class="qty-input" value="${item.quantity}" readonly>
-                            <button class="qty-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
-                        </div>
-                    </div>
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price-row">
-                            <span class="current-price">₹${item.price}</span>
-                            <span class="original-price">₹${Math.round(item.price * 1.2)}</span>
-                        </div>
-                        <div class="remove-item-btn" onclick="removeItem('${item.id}')">Remove</div>
-                    </div>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', itemHtml);
-        });
-
-        // Update Summary
-        document.getElementById('cartItemCount').textContent = cart.length;
-        document.getElementById('summaryItemCount').textContent = cart.length;
-        document.getElementById('summarySubtotal').textContent = `₹${total}`;
-        document.getElementById('summaryTotal').textContent = `₹${total}`;
-        const savings = Math.round(total * 0.2);
-        document.querySelector('.savings-text').textContent = `You will save ₹${savings} on this order`;
     };
 
     const btnGoToCheckout = document.getElementById('btnGoToCheckout');
     if (btnGoToCheckout) {
         btnGoToCheckout.addEventListener('click', () => {
-            if (!currentUser) {
+            if (!API.isLoggedIn()) {
                 alert("Please login to continue");
                 window.location.href = 'login.html';
                 return;
@@ -178,13 +235,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // --- CHECKOUT LOGIC ---
-    window.initCheckout = function () {
-        if (!currentUser) {
+    window.initCheckout = async function () {
+        if (!API.isLoggedIn()) {
             window.location.href = 'login.html';
             return;
         }
 
-        renderCheckoutSummary();
+        await renderCheckoutSummary();
 
         // Step 1: Login
         const userEmailSpan = document.querySelector('#checkoutUserEmail span');
@@ -225,30 +282,42 @@ document.addEventListener("DOMContentLoaded", function () {
         // Step 4: Final Place Order
         const btnPlaceOrderFinal = document.getElementById('btnPlaceOrderFinal');
         if (btnPlaceOrderFinal) {
-            btnPlaceOrderFinal.addEventListener('click', () => {
-                const shipping = JSON.parse(localStorage.getItem('rn_shipping'));
-                const order = {
-                    orderId: "ORD-" + Math.floor(Math.random() * 1000000),
-                    user: currentUser.email,
-                    items: cart,
-                    shipping: shipping,
-                    total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-                    status: 'confirmed',
-                    date: new Date().toLocaleDateString()
-                };
+            btnPlaceOrderFinal.addEventListener('click', async () => {
+                try {
+                    const shipping = JSON.parse(localStorage.getItem('rn_shipping'));
+                    const cartResult = await API.getCart();
 
-                orders.push(order);
-                localStorage.setItem('rn_orders', JSON.stringify(orders));
-                localStorage.setItem('rn_last_order', JSON.stringify(order));
+                    if (!cartResult.success || cartResult.data.items.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
 
-                // Clear Cart
-                cart = [];
-                saveCart();
+                    const items = cartResult.data.items;
+                    const total = cartResult.data.totalPrice;
 
-                // Send WhatsApp
-                sendOrderWhatsApp(order);
+                    // Place order via API (also clears cart on server)
+                    const orderResult = await API.placeOrder(items, shipping, total);
 
-                window.location.href = 'order-success.html';
+                    if (orderResult.success) {
+                        // Save last order for success page
+                        localStorage.setItem('rn_last_order', JSON.stringify(orderResult.data));
+
+                        // Send WhatsApp notification
+                        sendOrderWhatsApp({
+                            orderId: orderResult.data.orderId,
+                            total: orderResult.data.total || total,
+                            shipping: shipping,
+                            items: items
+                        });
+
+                        window.location.href = 'order-success.html';
+                    } else {
+                        alert('Failed to place order: ' + (orderResult.error || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error('Place order error:', err.message);
+                    alert('Error placing order: ' + err.message);
+                }
             });
         }
     };
@@ -258,26 +327,34 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById(`step${stepNumber}`).classList.add('active');
     }
 
-    function renderCheckoutSummary() {
+    async function renderCheckoutSummary() {
         const container = document.getElementById('checkoutOrderItems');
         if (!container) return;
 
-        let total = 0;
-        container.innerHTML = '';
-        cart.forEach(item => {
-            total += item.price * item.quantity;
-            container.insertAdjacentHTML('beforeend', `
-                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
-                    <span>${item.name} x ${item.quantity}</span>
-                    <span>₹${item.price * item.quantity}</span>
-                </div>
-            `);
-        });
+        try {
+            const result = await API.getCart();
+            const items = result.success ? result.data.items : [];
 
-        const count = cart.length;
-        document.getElementById('checkItemCount').textContent = count;
-        document.getElementById('checkSubtotal').textContent = `₹${total}`;
-        document.getElementById('checkTotal').textContent = `₹${total}`;
+            let total = 0;
+            container.innerHTML = '';
+            items.forEach(item => {
+                const price = parseFloat(item.price);
+                total += price * item.quantity;
+                container.insertAdjacentHTML('beforeend', `
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span>₹${price * item.quantity}</span>
+                    </div>
+                `);
+            });
+
+            const count = items.length;
+            document.getElementById('checkItemCount').textContent = count;
+            document.getElementById('checkSubtotal').textContent = `₹${total}`;
+            document.getElementById('checkTotal').textContent = `₹${total}`;
+        } catch (err) {
+            console.error('Checkout summary error:', err.message);
+        }
     }
 
     function sendOrderWhatsApp(order) {
@@ -298,64 +375,75 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // --- ORDER HISTORY ---
-    window.renderOrderHistory = function () {
+    window.renderOrderHistory = async function () {
         const list = document.getElementById('orderHistoryList');
         if (!list) return;
 
-        const myOrders = orders.filter(o => o.user === currentUser.email).reverse();
-
-        if (myOrders.length === 0) {
-            list.innerHTML = '<p style="text-align: center; padding: 40px;">No orders found.</p>';
+        if (!API.isLoggedIn()) {
+            list.innerHTML = '<p style="text-align: center; padding: 40px;">Please login to view orders.</p>';
             return;
         }
 
-        list.innerHTML = '';
-        myOrders.forEach(order => {
-            const firstItem = order.items[0];
-            const itemHtml = `
-                <div class="order-history-card">
-                    <div class="order-history-info">
-                        ${firstItem.image ? `<img src="${firstItem.image}" class="order-history-img">` : `<i class="fas fa-leaf" style="font-size: 2rem;"></i>`}
-                        <div>
-                            <div style="font-weight: 600;">${firstItem.name} ${order.items.length > 1 ? ` & ${order.items.length - 1} more` : ''}</div>
-                            <div style="font-size: 0.9rem; color: #878787;">Order ID: ${order.orderId}</div>
+        try {
+            const result = await API.getOrders();
+            const myOrders = result.success ? result.data : [];
+
+            if (myOrders.length === 0) {
+                list.innerHTML = '<p style="text-align: center; padding: 40px;">No orders found.</p>';
+                return;
+            }
+
+            list.innerHTML = '';
+            myOrders.forEach(order => {
+                const firstItem = order.order_items?.[0] || {};
+                const itemCount = order.order_items?.length || 0;
+                const orderDate = new Date(order.created_at).toLocaleDateString();
+                const itemHtml = `
+                    <div class="order-history-card">
+                        <div class="order-history-info">
+                            ${firstItem.image ? `<img src="${firstItem.image}" class="order-history-img">` : `<i class="fas fa-leaf" style="font-size: 2rem;"></i>`}
+                            <div>
+                                <div style="font-weight: 600;">${firstItem.product_name || 'Order'} ${itemCount > 1 ? ` & ${itemCount - 1} more` : ''}</div>
+                                <div style="font-size: 0.9rem; color: #878787;">Order ID: ${order.order_id}</div>
+                            </div>
                         </div>
+                        <div style="font-weight: 600;">₹${order.total}</div>
+                        <div style="color: ${order.status === 'cancelled' ? '#d32f2f' : '#388e3c'}; font-weight: 600;">● ${order.status.charAt(0).toUpperCase() + order.status.slice(1)} on ${orderDate}</div>
                     </div>
-                    <div style="font-weight: 600;">₹${order.total}</div>
-                    <div style="color: #388e3c; font-weight: 600;">● Confirmed on ${order.date}</div>
-                </div>
-            `;
-            list.insertAdjacentHTML('beforeend', itemHtml);
-        });
+                `;
+                list.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        } catch (err) {
+            console.error('Order history error:', err.message);
+            list.innerHTML = '<p style="text-align: center; padding: 40px;">Failed to load orders. Is the server running?</p>';
+        }
     };
 
     // --- PRODUCT UI LOGIC ---
 
     document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', (e) => {
+        button.addEventListener('click', async (e) => {
             const card = e.target.closest('.plant-card') || e.target.closest('.material-card');
             if (!card) return;
             const id = card.getAttribute('data-id');
             const name = card.getAttribute('data-name');
             const price = parseInt(card.getAttribute('data-price'));
 
-            // Extract image or icon
+            // Extract image
             let image = "";
             const imgTag = card.querySelector('img');
             if (imgTag) {
                 image = imgTag.src;
             }
 
-            const existingItem = cart.find(item => item.id === id);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ id, name, price, quantity: 1, image: image });
+            try {
+                const result = await API.addToCart({ id, name, price, image, quantity: 1 });
+                alert(result.message || `${name} added to cart`);
+                await updateCartCount();
+            } catch (err) {
+                console.error('Add to cart error:', err.message);
+                alert('Failed to add item: ' + err.message);
             }
-
-            saveCart();
-            alert(`${name} added to cart`);
-            updateCartCount();
         });
     });
 
@@ -365,10 +453,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return re.test(email.toLowerCase());
     }
 
-    // --- AUTH & LOGIN ---
+    // --- AUTH & LOGIN (Now uses API) ---
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
@@ -378,11 +466,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            if (email && password) {
-                const user = { email: email, name: email.split('@')[0] };
-                localStorage.setItem('rn_user', JSON.stringify(user));
-                alert("Login successful");
-                window.location.href = "plants.html";
+            if (!password || password.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            try {
+                const result = await API.login(email, password);
+                if (result.success) {
+                    alert("Login successful!");
+                    window.location.href = "plants.html";
+                } else {
+                    alert(result.error || "Login failed.");
+                }
+            } catch (err) {
+                console.error('Login error:', err.message);
+                alert("Login failed: " + err.message);
             }
         });
     }
@@ -390,10 +489,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Signup Form Handler
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
-        signupForm.addEventListener('submit', (e) => {
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('signupName').value.trim();
             const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword')?.value || '';
 
             if (name.length < 2) {
                 alert("Please enter your full name.");
@@ -405,10 +505,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const user = { email: email, name: name };
-            localStorage.setItem('rn_user', JSON.stringify(user));
-            alert("Account created!");
-            window.location.href = 'plants.html';
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            try {
+                const result = await API.signup(name, email, password);
+                if (result.success) {
+                    alert("Account created successfully!");
+                    window.location.href = 'plants.html';
+                } else {
+                    alert(result.error || "Signup failed.");
+                }
+            } catch (err) {
+                console.error('Signup error:', err.message);
+                alert("Signup failed: " + err.message);
+            }
         });
     }
 
@@ -421,7 +534,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userDropdown.className = 'user-dropdown';
 
         const avatarInitial = currentUser.name.charAt(0).toUpperCase();
-        const isAdmin = currentUser.email === 'manishndabade2006@gmail.com';
+        const isAdmin = currentUser.role === 'admin';
         const adminLink = isAdmin ? `<li><a href="admin.html"><i class="fas fa-cog"></i> Admin Dashboard</a></li>` : '';
 
         userDropdown.innerHTML = `
@@ -456,26 +569,10 @@ document.addEventListener("DOMContentLoaded", function () {
             profileDropdown.classList.remove('active');
         });
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            localStorage.removeItem('rn_user');
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            await API.logout();
             alert("Logged out successfully");
             window.location.reload();
-        });
-    }
-
-    // --- CHARACTER COUNTER FOR CONTACT FORM ---
-    const messageTextarea = document.getElementById('message');
-    const charCountDisplay = document.getElementById('charCountDisplay');
-    if (messageTextarea && charCountDisplay) {
-        const maxLength = messageTextarea.getAttribute('maxlength');
-        messageTextarea.addEventListener('input', () => {
-            const currentLength = messageTextarea.value.length;
-            charCountDisplay.textContent = `${currentLength} / ${maxLength} characters`;
-            if (currentLength >= maxLength) {
-                charCountDisplay.style.color = 'red';
-            } else {
-                charCountDisplay.style.color = '#666';
-            }
         });
     }
 
