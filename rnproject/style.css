@@ -1000,7 +1000,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(45, 106, 79, 0.1) 0%, rgba(27, 67, 50, 0.1) 100%), url("./assets/nursary plant.jpg") center/cover no-repeat;
+    background: linear-gradient(135deg, rgba(45, 106, 79, 0.1) 0%, rgba(27, 67, 50, 0.1) 100%), url("./assets/nursary-plant.jpg") center/cover no-repeat;
     position: relative;
     padding: var(--spacing-md);
 }
