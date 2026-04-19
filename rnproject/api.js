@@ -14,6 +14,16 @@ const API = (() => {
         return session?.access_token || null;
     }
 
+    function getRefreshToken() {
+        const session = JSON.parse(localStorage.getItem('rn_session') || 'null');
+        return session?.refresh_token || null;
+    }
+
+    function getSessionExpiry() {
+        const session = JSON.parse(localStorage.getItem('rn_session') || 'null');
+        return session?.expires_at || 0;
+    }
+
     function saveSession(session) {
         localStorage.setItem('rn_session', JSON.stringify(session));
     }
@@ -35,15 +45,83 @@ const API = (() => {
         return !!getToken() && !!getCurrentUser();
     }
 
+    /**
+     * Check if the token is expired or about to expire (within 60 seconds).
+     * expires_at is a Unix timestamp in seconds.
+     */
+    function isTokenExpired() {
+        const expiresAt = getSessionExpiry();
+        if (!expiresAt) return true;
+        const nowSec = Math.floor(Date.now() / 1000);
+        return nowSec >= (expiresAt - 60); // 60-second buffer
+    }
+
+    /**
+     * Attempt to refresh the access token using the refresh_token.
+     * Returns true if refresh succeeded, false otherwise.
+     */
+    let _refreshPromise = null; // Prevent concurrent refresh calls
+    async function refreshAccessToken() {
+        // If a refresh is already in progress, wait for it
+        if (_refreshPromise) return _refreshPromise;
+
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+            clearSession();
+            return false;
+        }
+
+        _refreshPromise = (async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/auth/refresh-token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh_token: refreshToken })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.data?.session) {
+                    saveSession(data.data.session);
+                    if (data.data.user) saveUser(data.data.user);
+                    return true;
+                } else {
+                    console.warn('Token refresh failed:', data.error);
+                    clearSession();
+                    return false;
+                }
+            } catch (err) {
+                console.error('Token refresh error:', err.message);
+                clearSession();
+                return false;
+            } finally {
+                _refreshPromise = null;
+            }
+        })();
+
+        return _refreshPromise;
+    }
+
     // ==========================================
-    // HTTP HELPERS
+    // HTTP HELPERS (with auto-refresh)
     // ==========================================
-    async function request(endpoint, options = {}) {
+    async function request(endpoint, options = {}, _isRetry = false) {
         const url = `${BASE_URL}${endpoint}`;
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
         };
+
+        // Auto-refresh token if it's expired (before making the request)
+        if (isLoggedIn() && isTokenExpired() && !_isRetry) {
+            const refreshed = await refreshAccessToken();
+            if (!refreshed) {
+                // Token couldn't be refreshed — force logout
+                clearSession();
+                window.location.href = 'login.html';
+                throw new Error('Session expired. Please login again.');
+            }
+        }
 
         // Attach auth token if available
         const token = getToken();
@@ -58,6 +136,18 @@ const API = (() => {
             });
 
             const data = await response.json();
+
+            // Handle 401 — try refreshing token once and retry the request
+            if (response.status === 401 && !_isRetry && getRefreshToken()) {
+                const refreshed = await refreshAccessToken();
+                if (refreshed) {
+                    return request(endpoint, options, true); // Retry once
+                } else {
+                    clearSession();
+                    window.location.href = 'login.html';
+                    throw new Error('Session expired. Please login again.');
+                }
+            }
 
             if (!response.ok) {
                 throw new Error(data.error || `Request failed with status ${response.status}`);

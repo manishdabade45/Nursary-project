@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 const { requireAuth } = require('../middleware/auth');
 
 // All order routes require authentication
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
         const orderId = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
 
         // Create the order
-        const { data: order, error: orderError } = await supabase
+        const { data: order, error: orderError } = await supabaseAdmin
             .from('orders')
             .insert({
                 order_id: orderId,
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
             image: item.image || ''
         }));
 
-        const { error: itemsError } = await supabase
+        const { error: itemsError } = await supabaseAdmin
             .from('order_items')
             .insert(orderItems);
 
@@ -71,7 +71,7 @@ router.post('/', async (req, res) => {
         }
 
         // Clear the user's cart after successful order
-        await supabase
+        await supabaseAdmin
             .from('cart')
             .delete()
             .eq('user_id', req.user.id);
@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
 // ==========================================
 router.get('/', async (req, res) => {
     try {
-        const { data: orders, error } = await supabase
+        const { data: orders, error } = await supabaseAdmin
             .from('orders')
             .select(`
                 *,
@@ -141,7 +141,7 @@ router.get('/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
 
-        const { data: order, error } = await supabase
+        const { data: order, error } = await supabaseAdmin
             .from('orders')
             .select(`
                 *,

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 // ==========================================
@@ -9,7 +9,7 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 // ==========================================
 router.get('/profile', requireAuth, async (req, res) => {
     try {
-        const { data: profile, error } = await supabase
+        const { data: profile, error } = await supabaseAdmin
             .from('users')
             .select('*')
             .eq('id', req.user.id)
@@ -50,7 +50,7 @@ router.put('/profile', requireAuth, async (req, res) => {
         if (address) updates.address = address;
         updates.updated_at = new Date().toISOString();
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('users')
             .update(updates)
             .eq('id', req.user.id)

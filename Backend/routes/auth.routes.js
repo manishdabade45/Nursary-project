@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../config/supabase');
+const { createAnonClient, supabaseAdmin } = require('../config/supabase');
 const { requireAuth } = require('../middleware/auth');
 
 // ==========================================
@@ -26,6 +26,9 @@ router.post('/signup', async (req, res) => {
             });
         }
 
+        // Create a fresh client for this signup (no shared session conflicts)
+        const supabase = createAnonClient();
+
         // Create user in Supabase Auth
         const { data, error } = await supabase.auth.signUp({
             email,
@@ -44,9 +47,9 @@ router.post('/signup', async (req, res) => {
             });
         }
 
-        // Insert profile into the users table
+        // Insert profile into the users table (use admin client to bypass RLS)
         if (data.user) {
-            const { error: profileError } = await supabase
+            const { error: profileError } = await supabaseAdmin
                 .from('users')
                 .insert({
                     id: data.user.id,
@@ -97,6 +100,9 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // Create a fresh client for this login (no shared session conflicts)
+        const supabase = createAnonClient();
+
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
@@ -109,8 +115,8 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Fetch user profile from users table
-        const { data: profile } = await supabase
+        // Fetch user profile from users table (admin client to bypass RLS)
+        const { data: profile } = await supabaseAdmin
             .from('users')
             .select('*')
             .eq('id', data.user.id)
@@ -144,18 +150,84 @@ router.post('/login', async (req, res) => {
 });
 
 // ==========================================
+// POST /api/auth/refresh-token
+// Refresh an expired access token using a refresh token
+// ==========================================
+router.post('/refresh-token', async (req, res) => {
+    try {
+        const { refresh_token } = req.body;
+
+        if (!refresh_token) {
+            return res.status(400).json({
+                success: false,
+                error: 'Refresh token is required.'
+            });
+        }
+
+        // Create a fresh client for the refresh operation
+        const supabase = createAnonClient();
+
+        const { data, error } = await supabase.auth.refreshSession({
+            refresh_token
+        });
+
+        if (error || !data.session) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid or expired refresh token. Please login again.'
+            });
+        }
+
+        // Fetch updated profile
+        const { data: profile } = await supabaseAdmin
+            .from('users')
+            .select('id, email, name, role')
+            .eq('id', data.user.id)
+            .single();
+
+        res.json({
+            success: true,
+            message: 'Token refreshed successfully.',
+            data: {
+                user: {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: profile?.name || data.user.email.split('@')[0],
+                    role: profile?.role || 'customer'
+                },
+                session: {
+                    access_token: data.session.access_token,
+                    refresh_token: data.session.refresh_token,
+                    expires_at: data.session.expires_at
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error('Refresh token error:', err.message);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error during token refresh.'
+        });
+    }
+});
+
+// ==========================================
 // POST /api/auth/logout
 // Sign out the current user
 // ==========================================
 router.post('/logout', requireAuth, async (req, res) => {
     try {
-        const { error } = await supabase.auth.signOut();
+        // Use admin client to revoke the user's session properly
+        // This invalidates the specific user's refresh token on the server
+        const { error } = await supabaseAdmin.auth.admin.signOut(
+            req.headers.authorization?.split(' ')[1],
+            'local'
+        );
 
         if (error) {
-            return res.status(400).json({
-                success: false,
-                error: error.message
-            });
+            console.warn('Server-side signout warning:', error.message);
+            // Don't fail — the client will clear its session anyway
         }
 
         res.json({
@@ -165,9 +237,10 @@ router.post('/logout', requireAuth, async (req, res) => {
 
     } catch (err) {
         console.error('Logout error:', err.message);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error during logout.'
+        // Still return success — client clears session regardless
+        res.json({
+            success: true,
+            message: 'Logged out successfully.'
         });
     }
 });
@@ -178,7 +251,8 @@ router.post('/logout', requireAuth, async (req, res) => {
 // ==========================================
 router.get('/me', requireAuth, async (req, res) => {
     try {
-        const { data: profile, error } = await supabase
+        // Use admin client to fetch profile (bypasses RLS, always works)
+        const { data: profile, error } = await supabaseAdmin
             .from('users')
             .select('*')
             .eq('id', req.user.id)

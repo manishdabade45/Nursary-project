@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 const { requireAuth } = require('../middleware/auth');
 
 // All cart routes require authentication
@@ -12,7 +12,7 @@ router.use(requireAuth);
 // ==========================================
 router.get('/', async (req, res) => {
     try {
-        const { data: cartItems, error } = await supabase
+        const { data: cartItems, error } = await supabaseAdmin
             .from('cart')
             .select('*')
             .eq('user_id', req.user.id)
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
         }
 
         // Check if item already exists in cart
-        const { data: existing } = await supabase
+        const { data: existing } = await supabaseAdmin
             .from('cart')
             .select('*')
             .eq('user_id', req.user.id)
@@ -74,7 +74,7 @@ router.post('/', async (req, res) => {
 
         if (existing) {
             // Update quantity
-            const { data, error } = await supabase
+            const { data, error } = await supabaseAdmin
                 .from('cart')
                 .update({
                     quantity: existing.quantity + quantity,
@@ -88,7 +88,7 @@ router.post('/', async (req, res) => {
             result = data;
         } else {
             // Insert new cart item
-            const { data, error } = await supabase
+            const { data, error } = await supabaseAdmin
                 .from('cart')
                 .insert({
                     user_id: req.user.id,
@@ -138,7 +138,7 @@ router.put('/:id', async (req, res) => {
 
         // If quantity is 0, delete the item
         if (quantity === 0) {
-            const { error } = await supabase
+            const { error } = await supabaseAdmin
                 .from('cart')
                 .delete()
                 .eq('id', id)
@@ -152,7 +152,7 @@ router.put('/:id', async (req, res) => {
             });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('cart')
             .update({
                 quantity,
@@ -193,7 +193,7 @@ router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .from('cart')
             .delete()
             .eq('id', id)
@@ -226,7 +226,7 @@ router.delete('/:id', async (req, res) => {
 // ==========================================
 router.delete('/', async (req, res) => {
     try {
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .from('cart')
             .delete()
             .eq('user_id', req.user.id);

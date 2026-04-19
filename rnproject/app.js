@@ -528,7 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- AUTH UI + LOGOUT ---
     const loginIconLink = document.querySelector('.nav-icon[title="Login / Register"]');
 
-    if (currentUser && loginIconLink) {
+    if (API.isLoggedIn() && currentUser && loginIconLink) {
         const parent = loginIconLink.parentElement;
         const userDropdown = document.createElement('div');
         userDropdown.className = 'user-dropdown';

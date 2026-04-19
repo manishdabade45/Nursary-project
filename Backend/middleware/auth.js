@@ -1,4 +1,4 @@
-const { supabase, supabaseAdmin } = require('../config/supabase');
+const { supabaseAdmin } = require('../config/supabase');
 
 /**
  * Middleware to verify the Supabase JWT token from the Authorization header.
@@ -21,7 +21,7 @@ async function requireAuth(req, res, next) {
         const token = authHeader.split(' ')[1];
 
         // --- 2. Verify token with Supabase Auth ---
-        const { data: { user }, error } = await supabase.auth.getUser(token);
+        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
 
         if (error || !user) {
             return res.status(401).json({

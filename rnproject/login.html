@@ -105,7 +105,7 @@
     <script src="api.js"></script>
     <script src="app.js"></script>
     <script>
-        // Form Toggle logic
+        // Form Toggle logic (login ↔ signup view switching)
         const loginContainer = document.getElementById('loginFormContainer');
         const signupContainer = document.getElementById('signupFormContainer');
         const toSignup = document.getElementById('toSignup');
@@ -120,21 +120,7 @@
             signupContainer.style.display = 'none';
             loginContainer.style.display = 'block';
         });
-
-        // Signup Form Logic
-        const signupForm = document.getElementById('signupForm');
-        if (signupForm) {
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('signupName').value;
-                const email = document.getElementById('signupEmail').value;
-
-                const user = { email: email, name: name };
-                localStorage.setItem('rn_user', JSON.stringify(user));
-                alert("Account created and logged in!");
-                window.location.href = 'plants.html';
-            });
-        }
+        // Signup & Login form submission is handled by app.js via API.signup() / API.login()
     </script>
 </body>
 
